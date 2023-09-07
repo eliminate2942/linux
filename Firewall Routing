@@ -1,0 +1,66 @@
+If you want to implement a policy of "FORWARD and INPUT policy DROP" while allowing specific rules and NAT on your Debian 11 VM, here's how you can configure it:
+
+**1. Set Default Policies:**
+
+Edit your firewall rules to set the default policies for INPUT, FORWARD, and OUTPUT to DROP:
+
+```bash
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT
+```
+
+This will block all incoming traffic by default and allow outgoing traffic.
+
+**2. Define Specific Rules:**
+
+Next, you need to define specific rules to allow traffic that you want to permit. For example, if you want to allow ICMP (ping) traffic, SSH, and DNS, you can add rules like this:
+
+```bash
+# Allow established and related traffic
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow ICMP (ping) traffic
+sudo iptables -A INPUT -p icmp -j ACCEPT
+sudo iptables -A FORWARD -p icmp -j ACCEPT
+
+# Allow SSH traffic (change port if needed)
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A FORWARD -p tcp --dport 22 -j ACCEPT
+
+# Allow DNS traffic (UDP and TCP)
+sudo iptables -A INPUT -p udp --dport 53 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 53 -j ACCEPT
+```
+
+These rules allow incoming ICMP, SSH, and DNS traffic. You can add more rules as needed, depending on your specific requirements.
+
+**3. Enable Network Address Translation (NAT):**
+
+If you want to enable NAT, as previously explained, you can use the following command to set up NAT for outbound traffic on your external interface (`eth0`):
+
+```bash
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+```
+
+**4. Save the Rules:**
+
+To save your rules so they persist across reboots, you can use `iptables-persistent`:
+
+```bash
+sudo apt-get install iptables-persistent
+sudo service netfilter-persistent save
+```
+
+**5. Verify Your Rules:**
+
+You can use the `iptables -L` command to view your firewall rules:
+
+```bash
+sudo iptables -L
+```
+
+This command will show you a list of your current firewall rules. Make sure they match your desired configuration.
+
+By configuring your firewall with INPUT and FORWARD policies set to DROP and defining specific rules to allow desired traffic, you have implemented a strict security policy while allowing specific traffic to pass through. NAT is also set up for outbound traffic on the external interface, allowing internal devices to access the internet.
