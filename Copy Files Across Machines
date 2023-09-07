@@ -4,8 +4,6 @@ If you have SSH access to Client A, you can use the scp command to securely copy
 
 From the source machine (where ca.crt is located), run:
 
-bash
-Copy code
 scp /path/to/ca.crt user@client_a_ip:/path/on/client/a
 Replace /path/to/ca.crt with the actual path to the CA certificate file, user with your username on Client A, client_a_ip with the IP address of Client A, and /path/on/client/a with the destination path on Client A.
 
