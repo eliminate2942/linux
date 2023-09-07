@@ -1,0 +1,30 @@
+LDIF file for creating users, an OU, and a group
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: groups
+
+dn: cn=mygroup,ou=groups,dc=example,dc=com
+objectClass: groupOfNames
+cn: mygroup
+member: uid=johndoe,ou=people,dc=example,dc=com
+member: uid=janedoe,ou=people,dc=example,dc=com
+
+dn: uid=johndoe,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+cn: John Doe
+sn: Doe
+uid: johndoe
+userPassword: secret123
+ou: people
+
+dn: uid=janedoe,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+cn: Jane Doe
+sn: Doe
+uid: janedoe
+userPassword: password123
+ou: people
