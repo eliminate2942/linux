@@ -18,7 +18,7 @@ sudo apt install easy-rsa
 EasyRSA requires a directory to store its configuration and generated certificates. You can create a new directory for your CA:
 
 ```bash
-sudo mkdir /etc/easyrsa
+sudo mkdir /ca/
 ```
 
 **Step 3: Initialize EasyRSA**
@@ -26,7 +26,7 @@ sudo mkdir /etc/easyrsa
 Initialize EasyRSA within the newly created directory:
 
 ```bash
-sudo easyrsa init-pki
+./easyrsa init-pki
 ```
 
 **Step 4: Build the CA**
@@ -34,7 +34,7 @@ sudo easyrsa init-pki
 Generate your CA certificate and private key. This will be the root certificate of your CA:
 
 ```bash
-sudo easyrsa build-ca nopass
+./easyrsa build-ca nopass
 ```
 
 You'll be prompted to enter a Common Name (CN) for your CA. This should be something like "MyRootCA."
