@@ -1,0 +1,11 @@
+apt install smbd
+mkdir /smbshare
+nano /etc/smb.conf
+         comment =samba share
+         path =/smbshare
+         read-only =on
+         browsable =yes
+         writeable =yes
+useradd smbuser
+smbpasswd -a smbuser
+chown smbuser:smbuser /smbshare/
