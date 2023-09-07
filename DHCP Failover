@@ -1,0 +1,30 @@
+failover peer "dhcp-failover" {
+  primary;
+  address 192.168.1.100;   # IP address of the primary server
+  port 647;
+  peer address 192.168.1.101;   # IP address of the secondary server
+  peer port 647;
+  max-response-delay 60;
+  max-unacked-updates 10;
+}
+
+# DHCP pool configuration
+subnet 192.168.1.0 netmask 255.255.255.0 {
+  range 192.168.1.50 192.168.1.100;
+}
+Example of the dhcpd.conf file on the secondary server (dhcp-server2):
+
+plaintext
+Copy code
+failover peer "dhcp-failover" {
+  secondary;
+  address 192.168.1.101;   # IP address of the secondary server
+  port 647;
+  peer address 192.168.1.100;   # IP address of the primary server
+  peer port 647;
+}
+
+# DHCP pool configuration
+subnet 192.168.1.0 netmask 255.255.255.0 {
+  range 192.168.1.50 192.168.1.100;
+}
