@@ -1,0 +1,69 @@
+The easiest way to add four new 2GB HDDs to a machine, configure a software-based RAID 10 array, and mount it to the `/share` path is by following these steps:
+
+1. **Insert and Recognize the New Drives:**
+
+   Physically insert the four new 2GB HDDs into the machine's drive bays. Ensure that the system recognizes the drives. You can check their presence using commands like `lsblk`, `fdisk -l`, or `ls /dev/sd*`. The drives will typically be named `/dev/sdX`, where "X" is a letter representing each drive (e.g., `/dev/sda`, `/dev/sdb`, etc.).
+
+2. **Install Required Software:**
+
+   If your system doesn't already have the necessary software for creating and managing RAID arrays, you may need to install it. On Linux systems, you can use `mdadm` for software RAID. Install it using your system's package manager:
+
+   ```bash
+   sudo apt update
+   sudo apt install mdadm
+   ```
+
+3. **Create the RAID 10 Array:**
+
+   Use the `mdadm` command to create a RAID 10 array from the four drives. Replace `/dev/sdX` with the actual drive names. For example:
+
+   ```bash
+   sudo mdadm --create --verbose /dev/md0 --level=10 --raid-devices=4 /dev/sdX1 /dev/sdX2 /dev/sdX3 /dev/sdX4
+   ```
+
+   This command creates a RAID 10 array named `/dev/md0` using the four drives. Adjust the device names accordingly.
+
+4. **Format the RAID Array:**
+
+   Format the newly created RAID array with a file system of your choice. For example, to format it with the ext4 file system:
+
+   ```bash
+   sudo mkfs.ext4 /dev/md0
+   ```
+
+5. **Create a Mount Point:**
+
+   Create a directory where you want to mount the RAID array. For instance:
+
+   ```bash
+   sudo mkdir /share
+   ```
+
+6. **Mount the RAID Array:**
+
+   Mount the RAID array to the `/share` mount point:
+
+   ```bash
+   sudo mount /dev/md0 /share
+   ```
+
+7. **Configure Automatic Mounting (Optional):**
+
+   To ensure the RAID array is mounted automatically at boot, you can add an entry to the `/etc/fstab` file:
+
+   ```bash
+   echo '/dev/md0 /share ext4 defaults 0 0' | sudo tee -a /etc/fstab
+   ```
+
+   This entry specifies that the RAID array should be mounted at `/share` using the ext4 file system with default options.
+
+8. **Verify the Configuration:**
+
+   Check the status of the RAID array and ensure it's mounted correctly:
+
+   ```bash
+   sudo mdadm --detail /dev/md0
+   df -h /share
+   ```
+
+You should now have a RAID 10 array consisting of the four 2GB HDDs, mounted at the `/share` path. Data written to `/share` will be distributed across the drives in a mirrored-stripped configuration, providing redundancy and improved performance.
