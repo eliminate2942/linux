@@ -1,0 +1,82 @@
+Setting up a site-to-site IPsec VPN on Linux Debian 11 involves several steps. Here's a high-level overview of the process:
+
+1. **Prepare Your Servers:**
+   - Ensure that both Linux servers you want to connect are running Debian 11 and have static IP addresses.
+
+2. **Install StrongSwan:**
+   - StrongSwan is the most commonly used IPsec VPN implementation on Linux. You can install it using the following command:
+     ```
+     sudo apt-get update
+     sudo apt-get install strongswan
+     ```
+
+3. **Configuration:**
+   - Configure the IPsec VPN on both servers by editing their respective `/etc/ipsec.conf` files. You'll define your VPN connection parameters here.
+
+   Sample `/etc/ipsec.conf` on Server 1:
+   ```
+   config setup
+       charondebug="ike 2, knl 2, cfg 2, net 2, esp 2, dmn 2, 0"
+
+   conn %default
+       ikelifetime=60m
+       keylife=20m
+       rekeymargin=3m
+       keyingtries=1
+       authby=secret
+       keyexchange=ikev2
+
+   conn SiteToSite
+       left=<Server1_Public_IP>
+       right=<Server2_Public_IP>
+       ike=aes256-sha256-modp2048!
+       esp=aes256-sha256!
+       auto=start
+   ```
+
+   Sample `/etc/ipsec.conf` on Server 2:
+   ```
+   config setup
+       charondebug="ike 2, knl 2, cfg 2, net 2, esp 2, dmn 2, 0"
+
+   conn %default
+       ikelifetime=60m
+       keylife=20m
+       rekeymargin=3m
+       keyingtries=1
+       authby=secret
+       keyexchange=ikev2
+
+   conn SiteToSite
+       left=<Server2_Public_IP>
+       right=<Server1_Public_IP>
+       ike=aes256-sha256-modp2048!
+       esp=aes256-sha256!
+       auto=start
+   ```
+
+   Replace `<Server1_Public_IP>` and `<Server2_Public_IP>` with the actual public IP addresses of your servers.
+
+4. **Configure Pre-Shared Keys:**
+   - Edit the `/etc/ipsec.secrets` file on both servers to define the pre-shared keys used for authentication.
+   
+   Sample `/etc/ipsec.secrets` on both Server 1 and Server 2:
+   ```
+   <Server1_Public_IP> : PSK "YourSecretKey"
+   <Server2_Public_IP> : PSK "YourSecretKey"
+   ```
+   Replace `<Server1_Public_IP>`, `<Server2_Public_IP>`, and `"YourSecretKey"` with your actual information.
+
+5. **Restart StrongSwan:**
+   - Restart the StrongSwan service on both servers to apply the configurations:
+     ```
+     sudo systemctl restart strongswan
+     ```
+
+6. **Firewall Configuration:**
+   - Make sure your server's firewall (e.g., `iptables`) allows traffic on the necessary IPsec ports (UDP 500 and UDP 4500).
+
+7. **Testing:**
+   - You can check the status of the IPsec connection using `sudo ipsec statusall`.
+
+That's a basic overview of setting up a site-to-site IPsec VPN on Debian 11. Be sure to adjust the configurations and security settings to meet your specific requirements and security standards. Additionally, consider setting up routing to ensure that traffic between the two subnets can flow through the VPN tunnel.
