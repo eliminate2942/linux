@@ -30,6 +30,7 @@ Configuring Dynamic DNS (DDNS) using BIND9 after DNS has already been configured
        type master;
        file "/etc/bind/zones/db.example.com";
        allow-update { key "ddns-key"; };
+       allow-query { 192.168.1.0/24; };
    };
    ```
 
