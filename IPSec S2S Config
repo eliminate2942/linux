@@ -1,0 +1,12 @@
+conn %default
+    ikelifetime=60m
+    keylife=20m
+    rekeymargin=3m
+    authby=secret
+    keyexchange=ikev2
+
+conn SiteToSite
+    left=<Server1_Public_IP>
+    right=<Server2_Public_IP>
+    auto=start
+    esp=aes256-sha256!
